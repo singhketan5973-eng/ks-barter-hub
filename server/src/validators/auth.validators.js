@@ -22,3 +22,10 @@ const password = z
 export const registerSchemas = {
   body: z.object({ name, email, password }),
 };
+
+export const loginSchemas = {
+  body: z.object({
+    email,
+    password: z.string('Password is required').min(1, 'Password is required').max(200),
+  }),
+};
