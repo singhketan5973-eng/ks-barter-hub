@@ -8,3 +8,11 @@ export const authLimiter = rateLimit({
   legacyHeaders: false,
   message: { message: 'Too many attempts, please try again later' },
 });
+
+export const refreshLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  limit: env.NODE_ENV === 'production' ? 60 : 300,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { message: 'Too many requests, please try again later' },
+});
