@@ -1,5 +1,6 @@
 import { Fraunces, Public_Sans } from 'next/font/google';
 import './globals.css';
+import { AuthProvider } from '@/components/auth/AuthProvider';
 
 const fraunces = Fraunces({
   variable: '--font-fraunces',
@@ -28,7 +29,9 @@ export const viewport = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en" className={`${fraunces.variable} ${publicSans.variable} h-full antialiased`}>
-      <body className="flex min-h-full flex-col">{children}</body>
+      <body className="flex min-h-full flex-col">
+        <AuthProvider>{children}</AuthProvider>
+      </body>
     </html>
   );
 }

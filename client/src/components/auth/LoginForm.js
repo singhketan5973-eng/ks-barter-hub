@@ -10,11 +10,13 @@ import { FormField } from '@/components/ui/FormField';
 import { loginUser } from '@/lib/auth-api';
 import { applyApiErrors } from '@/lib/form-errors';
 import { loginSchema } from '@/lib/validation';
+import { useAuth } from '@/components/auth/AuthProvider';
 
 const FIELDS = ['email', 'password'];
 
-export function LoginForm({ justRegistered = false }) {
+export function LoginForm({ justRegistered = false, next = '/' }) {
   const router = useRouter();
+  const { signIn } = useAuth();
   const [formError, setFormError] = useState('');
 
   const {
@@ -30,8 +32,9 @@ export function LoginForm({ justRegistered = false }) {
   async function onSubmit(values) {
     setFormError('');
     try {
-      await loginUser(values);
-      router.push('/');
+      const { user } = await loginUser(values);
+      signIn(user);
+      router.push(next);
       router.refresh();
     } catch (err) {
       if (!applyApiErrors(err, setError, FIELDS)) {

@@ -1,5 +1,7 @@
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
+const NO_REFRESH_PATHS = ['/auth/login', '/auth/register', '/auth/refresh', '/auth/logout'];
+
 export class ApiError extends Error {
   constructor(status, message, details) {
     super(message);
@@ -9,7 +11,7 @@ export class ApiError extends Error {
   }
 }
 
-export async function api(path, { method = 'GET', body, headers, ...options } = {}) {
+async function send(path, { method = 'GET', body, headers, ...options } = {}) {
   if (!API_URL) {
     throw new ApiError(0, 'NEXT_PUBLIC_API_URL is not set');
   }
@@ -41,4 +43,46 @@ export async function api(path, { method = 'GET', body, headers, ...options } = 
   }
 
   return data;
+}
+
+let refreshPromise = null;
+
+function refreshSession() {
+  const run = () => send('/auth/refresh', { method: 'POST' });
+
+  if (typeof navigator !== 'undefined' && navigator.locks) {
+    return navigator.locks.request('barter-hub-refresh', run);
+  }
+  return run();
+}
+
+function refreshOnce() {
+  if (!refreshPromise) {
+    refreshPromise = refreshSession().finally(() => {
+      refreshPromise = null;
+    });
+  }
+  return refreshPromise;
+}
+
+export async function api(path, options = {}) {
+  try {
+    return await send(path, options);
+  } catch (err) {
+    const canRefresh = err.status === 401 && !NO_REFRESH_PATHS.includes(path);
+    if (!canRefresh) {
+      throw err;
+    }
+
+    try {
+      await refreshOnce();
+    } catch {
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(new Event('auth:expired'));
+      }
+      throw err;
+    }
+
+    return send(path, options);
+  }
 }
