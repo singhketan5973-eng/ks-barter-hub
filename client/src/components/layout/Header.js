@@ -49,7 +49,12 @@ export function Header() {
 
           {status === 'authenticated' && (
             <>
-              <span className="text-foreground-muted hidden text-sm sm:inline">{user.name}</span>
+              <Link
+                href="/account"
+                className="rounded-control hover:bg-surface-sunken inline-flex min-h-11 items-center px-3 font-medium"
+              >
+                {user.name}
+              </Link>
               <Button variant="secondary" onClick={handleSignOut}>
                 Log out
               </Button>

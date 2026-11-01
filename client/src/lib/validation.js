@@ -25,3 +25,9 @@ export const loginSchema = z.object({
   email,
   password: z.string('Enter your password').min(1, 'Enter your password').max(200),
 });
+
+export const profileSchema = z.object({
+  name,
+  city: z.string().trim().max(80, 'City must be at most 80 characters'),
+  bio: z.string().trim().max(500, 'Bio must be at most 500 characters'),
+});

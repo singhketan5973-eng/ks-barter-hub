@@ -3,12 +3,22 @@
 import { useId } from 'react';
 import { cn } from '@/lib/cn';
 import { Input } from './Input';
+import { Textarea } from './Textarea';
 
-export function FormField({ label, error, hint, required = false, className, ...inputProps }) {
+export function FormField({
+  label,
+  error,
+  hint,
+  required = false,
+  multiline = false,
+  className,
+  ...inputProps
+}) {
   const id = useId();
   const hintId = hint ? `${id}-hint` : undefined;
   const errorId = error ? `${id}-error` : undefined;
   const describedBy = [hintId, errorId].filter(Boolean).join(' ') || undefined;
+  const Control = multiline ? Textarea : Input;
 
   return (
     <div className={cn('space-y-1.5', className)}>
