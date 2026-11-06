@@ -16,3 +16,11 @@ export const refreshLimiter = rateLimit({
   legacyHeaders: false,
   message: { message: 'Too many requests, please try again later' },
 });
+
+export const createListingLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000,
+  limit: env.NODE_ENV === 'production' ? 20 : 200,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { message: 'You are posting too quickly, please try again later' },
+});

@@ -6,27 +6,27 @@ The Express API for Barter Hub. It serves JSON under `/api`, stores data in Mong
 
 Run these from the `server` folder.
 
-| Command | What it does |
-| --- | --- |
-| `npm run dev` | Starts the API and restarts it when a file changes |
-| `npm start` | Starts the API without restarting |
+| Command                   | What it does                                                |
+| ------------------------- | ----------------------------------------------------------- |
+| `npm run dev`             | Starts the API and restarts it when a file changes          |
+| `npm start`               | Starts the API without restarting                           |
 | `npm run seed:categories` | Adds the 16 starter categories. Safe to run more than once. |
-| `npm run lint` | Reports code problems |
-| `npm run format` | Rewrites files into the project style |
+| `npm run lint`            | Reports code problems                                       |
+| `npm run format`          | Rewrites files into the project style                       |
 
 ## Settings
 
 Copy `.env.example` to `.env` and set the values. The API validates them at startup and stops with a clear message if one is missing or invalid.
 
-| Variable | Required | Default | Description |
-| --- | --- | --- | --- |
-| `NODE_ENV` | No | `development` | `development`, `test`, or `production` |
-| `PORT` | No | `5000` | Port the API listens on |
-| `MONGODB_URI` | Yes | None | MongoDB Atlas connection string, including the database name |
-| `CLIENT_URL` | No | `http://localhost:5173` | Web app address allowed by CORS. Set it to `http://localhost:3000`. |
-| `JWT_ACCESS_SECRET` | Yes | None | Secret that signs access tokens. At least 32 characters. |
-| `JWT_ACCESS_EXPIRES_IN` | No | `15m` | Access token lifetime |
-| `REFRESH_TOKEN_TTL_DAYS` | No | `7` | Refresh token lifetime in days, from 1 to 90 |
+| Variable                 | Required | Default                 | Description                                                         |
+| ------------------------ | -------- | ----------------------- | ------------------------------------------------------------------- |
+| `NODE_ENV`               | No       | `development`           | `development`, `test`, or `production`                              |
+| `PORT`                   | No       | `5000`                  | Port the API listens on                                             |
+| `MONGODB_URI`            | Yes      | None                    | MongoDB Atlas connection string, including the database name        |
+| `CLIENT_URL`             | No       | `http://localhost:5173` | Web app address allowed by CORS. Set it to `http://localhost:3000`. |
+| `JWT_ACCESS_SECRET`      | Yes      | None                    | Secret that signs access tokens. At least 32 characters.            |
+| `JWT_ACCESS_EXPIRES_IN`  | No       | `15m`                   | Access token lifetime                                               |
+| `REFRESH_TOKEN_TTL_DAYS` | No       | `7`                     | Refresh token lifetime in days, from 1 to 90                        |
 
 ## Folder layout
 

@@ -26,3 +26,16 @@ export const authorize =
     req.auth.role = user.role;
     next();
   };
+
+export function optionalAuthenticate(req, res, next) {
+  const token = req.cookies?.[ACCESS_COOKIE];
+  if (token) {
+    try {
+      const payload = verifyAccessToken(token);
+      req.auth = { userId: payload.sub, role: payload.role };
+    } catch {
+      // An invalid or expired token is treated as an anonymous visitor.
+    }
+  }
+  next();
+}

@@ -1,7 +1,8 @@
 import { z } from 'zod';
 import { USER_STATUSES } from '../models/User.js';
+import { objectId } from './common.js';
 
-const objectId = z.string().regex(/^[a-f\d]{24}$/i, 'Invalid id');
+//const objectId = z.string().regex(/^[a-f\d]{24}$/i, 'Invalid id');
 
 export const userIdSchemas = {
   params: z.object({ id: objectId }),
