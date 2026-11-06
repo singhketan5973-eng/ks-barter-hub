@@ -1,0 +1,12 @@
+{
+  "access token": ["auth token", "access-token"],
+  "refresh token": ["renewal token", "refresh-token"],
+  "sign out everywhere": ["global logout", "log out everywhere"],
+  "email": ["e-mail", "E-mail"],
+  "MongoDB Atlas": ["Mongo Atlas", "Atlas DB"],
+  "Next.js": ["NextJS", "Next JS", "Nextjs"],
+  "Node.js": ["NodeJS", "Node JS", "Nodejs"],
+  "JavaScript": ["Javascript", "javascript"],
+  "GitHub": ["Github"],
+  "Barter Hub": ["BarterHub", "Barter-Hub"]
+}
