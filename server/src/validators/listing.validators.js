@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { CATEGORY_KINDS } from '../models/Category.js';
-import { CONDITIONS, SERVICE_MODES } from '../models/Listing.js';
+import { CONDITIONS, LISTING_STATUSES, SERVICE_MODES } from '../models/Listing.js';
 import { objectId } from './common.js';
 
 const kind = z.enum(Object.values(CATEGORY_KINDS), 'Choose thing or service');
@@ -78,4 +78,64 @@ export const updateListingSchemas = {
       availability: availability.optional(),
     })
     .refine((data) => Object.keys(data).length > 0, 'Provide at least one field to update'),
+};
+
+const pagination = {
+  page: z.coerce
+    .number('Page must be a number')
+    .int('Page must be a whole number')
+    .min(1, 'Page must be at least 1')
+    .max(500, 'Page must be at most 500')
+    .default(1),
+  limit: z.coerce
+    .number('Limit must be a number')
+    .int('Limit must be a whole number')
+    .min(1, 'Limit must be at least 1')
+    .max(50, 'Limit must be at most 50')
+    .default(20),
+};
+
+export const browseListingsSchemas = {
+  query: z
+    .object({
+      q: z
+        .string()
+        .trim()
+        .min(2, 'Search must be at least 2 characters')
+        .max(100, 'Search must be at most 100 characters')
+        .optional(),
+      kind: z.enum(Object.values(CATEGORY_KINDS), 'Choose item or service').optional(),
+      category: z
+        .string()
+        .trim()
+        .toLowerCase()
+        .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, 'Invalid category')
+        .optional(),
+      city: z
+        .string()
+        .trim()
+        .min(1, 'City cannot be empty')
+        .max(80, 'City must be at most 80 characters')
+        .optional(),
+      sort: z
+        .enum(['newest', 'oldest', 'relevance'], 'Choose newest, oldest or relevance')
+        .optional(),
+      ...pagination,
+    })
+    .refine((data) => data.sort !== 'relevance' || data.q, {
+      message: 'Relevance sorting needs a search term',
+      path: ['sort'],
+    }),
+};
+
+export const myListingsSchemas = {
+  query: z.object({
+    status: z
+      .enum(
+        ['all', ...Object.values(LISTING_STATUSES)],
+        'Choose all, active, pending, traded or archived'
+      )
+      .default('all'),
+    ...pagination,
+  }),
 };

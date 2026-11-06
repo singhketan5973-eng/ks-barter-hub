@@ -78,6 +78,12 @@ const listingSchema = new mongoose.Schema(
 listingSchema.index({ owner: 1, status: 1, createdAt: -1 });
 listingSchema.index({ category: 1, status: 1, createdAt: -1 });
 
+listingSchema.index({ status: 1, createdAt: -1 });
+listingSchema.index(
+  { title: 'text', description: 'text' },
+  { name: 'listing_text_search', weights: { title: 5, description: 1 } }
+);
+
 listingSchema.set('toJSON', {
   versionKey: false,
   transform: (doc, ret) => {

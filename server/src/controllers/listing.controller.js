@@ -23,3 +23,13 @@ export async function archive(req, res) {
   await listingService.archiveListing(req.auth.userId, req.validated.params.id);
   res.status(204).end();
 }
+
+export async function browse(req, res) {
+  const result = await listingService.browseListings(req.validated.query);
+  res.json(result);
+}
+
+export async function mine(req, res) {
+  const result = await listingService.getMyListings(req.auth.userId, req.validated.query);
+  res.json(result);
+}

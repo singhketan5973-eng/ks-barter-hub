@@ -174,3 +174,95 @@ export async function archiveListing(userId, id) {
   listing.status = LISTING_STATUSES.ARCHIVED;
   await listing.save();
 }
+
+const SUMMARY_LENGTH = 160;
+
+function toListingSummary(listing) {
+  const { owner, category } = listing;
+  const text = listing.description ?? '';
+  return {
+    id: listing.id,
+    kind: listing.kind,
+    status: listing.status,
+    title: listing.title,
+    summary: text.length > SUMMARY_LENGTH ? `${text.slice(0, SUMMARY_LENGTH).trimEnd()}…` : text,
+    wantedInReturn: listing.wantedInReturn,
+    city: listing.city,
+    condition: listing.condition,
+    serviceMode: listing.serviceMode,
+    durationMinutes: listing.durationMinutes,
+    category: category && {
+      id: category.id,
+      name: category.name,
+      slug: category.slug,
+      kind: category.kind,
+    },
+    owner: owner && { id: owner.id, name: owner.name, city: owner.city },
+    createdAt: listing.createdAt,
+  };
+}
+
+function buildPagination(page, limit, total) {
+  return {
+    page,
+    limit,
+    total,
+    totalPages: Math.ceil(total / limit),
+    hasNext: page * limit < total,
+  };
+}
+
+const escapeRegex = (text) => text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
+export async function browseListings(query) {
+  const { q, kind, category, city, page, limit } = query;
+  const sort = query.sort ?? (q ? 'relevance' : 'newest');
+
+  const suspendedOwners = await User.find({ status: USER_STATUSES.SUSPENDED }).distinct('_id');
+  const filter = { status: LISTING_STATUSES.ACTIVE, owner: { $nin: suspendedOwners } };
+
+  if (kind) filter.kind = kind;
+  if (city) filter.city = new RegExp(`^${escapeRegex(city)}$`, 'i');
+  if (q) filter.$text = { $search: q };
+
+  if (category) {
+    const found = await Category.findOne({ slug: category, isActive: true }).select('_id');
+    if (!found) {
+      throw new ApiError(400, 'Validation failed', { 'query.category': 'Unknown category' });
+    }
+    filter.category = found._id;
+  }
+
+  const projection = q ? { score: { $meta: 'textScore' } } : undefined;
+  const sortSpec =
+    sort === 'relevance'
+      ? { score: { $meta: 'textScore' }, createdAt: -1 }
+      : { createdAt: sort === 'oldest' ? 1 : -1, _id: sort === 'oldest' ? 1 : -1 };
+
+  const [total, docs] = await Promise.all([
+    Listing.countDocuments(filter),
+    Listing.find(filter, projection)
+      .sort(sortSpec)
+      .skip((page - 1) * limit)
+      .limit(limit)
+      .populate(POPULATE),
+  ]);
+
+  return { listings: docs.map(toListingSummary), pagination: buildPagination(page, limit, total) };
+}
+
+export async function getMyListings(userId, { status, page, limit }) {
+  const filter = { owner: userId };
+  if (status !== 'all') filter.status = status;
+
+  const [total, docs] = await Promise.all([
+    Listing.countDocuments(filter),
+    Listing.find(filter)
+      .sort({ createdAt: -1, _id: -1 })
+      .skip((page - 1) * limit)
+      .limit(limit)
+      .populate(POPULATE),
+  ]);
+
+  return { listings: docs.map(toListingSummary), pagination: buildPagination(page, limit, total) };
+}

@@ -3,11 +3,18 @@ import { validate } from '../middleware/validate.js';
 import { authenticate, optionalAuthenticate } from '../middleware/auth.js';
 import { createListingLimiter } from '../middleware/rateLimiters.js';
 import { idParamSchemas } from '../validators/common.js';
-import { createListingSchemas, updateListingSchemas } from '../validators/listing.validators.js';
+import {
+  browseListingsSchemas,
+  createListingSchemas,
+  myListingsSchemas,
+  updateListingSchemas,
+} from '../validators/listing.validators.js';
 import * as listingController from '../controllers/listing.controller.js';
 
 const router = Router();
 
+router.get('/', validate(browseListingsSchemas), listingController.browse);
+router.get('/mine', authenticate, validate(myListingsSchemas), listingController.mine);
 router.post(
   '/',
   authenticate,
