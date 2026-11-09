@@ -1,22 +1,50 @@
 import Link from 'next/link';
+import { ListingGrid } from '@/components/listings/ListingGrid';
+import { Alert } from '@/components/ui/Alert';
+import { fetchListings } from '@/lib/listing-api';
+import { HeroActions } from '@/components/home/HeroActions';
 
-export default function HomePage() {
+async function getLatestListings() {
+  try {
+    const { listings } = await fetchListings({ limit: 8 }, { cache: 'no-store' });
+    return listings;
+  } catch {
+    return null;
+  }
+}
+
+export default async function HomePage() {
+  const listings = await getLatestListings();
+
   return (
-    <div className="max-w-page mx-auto w-full px-6 py-16">
-      <h1 className="max-w-2xl text-4xl font-semibold sm:text-5xl">
-        Swap what you have for what you need
-      </h1>
-      <p className="text-foreground-muted mt-4 max-w-prose text-lg">
-        Trade things and skills with people near you. No money needed.
-      </p>
-      <div className="mt-8">
-        <Link
-          href="/register"
-          className="rounded-control bg-accent text-on-solid hover:bg-accent-hover inline-flex min-h-12 items-center px-6 text-lg font-medium"
-        >
-          Start swapping
-        </Link>
-      </div>
-    </div>
+    <>
+      <section className="max-w-page mx-auto w-full px-6 py-16">
+        <h1 className="max-w-2xl text-4xl font-semibold sm:text-5xl">
+          Swap what you have for what you need
+        </h1>
+        <p className="text-foreground-muted mt-4 max-w-prose text-lg">
+          Trade things and skills with people near you. No money needed.
+        </p>
+                <HeroActions />
+      </section>
+
+      <section aria-labelledby="newest-heading" className="max-w-page mx-auto w-full px-6 pb-8">
+        <h2 id="newest-heading" className="text-2xl font-semibold">
+          Newest listings
+        </h2>
+
+        <div className="mt-6">
+          {listings === null && (
+            <Alert variant="warning">
+              We could not load listings right now. Please try again in a moment.
+            </Alert>
+          )}
+          {listings?.length === 0 && (
+            <p className="text-foreground-muted">No listings yet. Be the first to post one.</p>
+          )}
+          {listings?.length > 0 && <ListingGrid listings={listings} />}
+        </div>
+      </section>
+    </>
   );
 }
