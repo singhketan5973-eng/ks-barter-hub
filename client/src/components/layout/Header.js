@@ -18,9 +18,14 @@ export function Header() {
   return (
     <header className="border-line bg-surface border-b">
       <div className="max-w-page mx-auto flex w-full items-center justify-between gap-4 px-6 py-3">
-        <Link href="/" className="font-heading text-primary text-xl font-semibold">
-          Barter Hub
-        </Link>
+        <div className="flex items-center gap-6">
+          <Link href="/" className="font-heading text-primary text-xl font-semibold">
+            Barter Hub
+          </Link>
+          <Link href="/browse" className="text-foreground hover:text-primary font-medium">
+            Browse
+          </Link>
+        </div>
 
         <nav aria-label="Account" className="flex items-center gap-2">
           {status === 'loading' && (

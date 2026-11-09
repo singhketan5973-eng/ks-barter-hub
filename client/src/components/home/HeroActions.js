@@ -14,7 +14,10 @@ export function HeroActions() {
   return (
     <div className="mt-8 flex flex-wrap items-center gap-3">
       {status === 'loading' && (
-        <div aria-hidden="true" className="h-12 w-44 animate-pulse rounded-control bg-surface-sunken" />
+        <div
+          aria-hidden="true"
+          className="rounded-control bg-surface-sunken h-12 w-44 animate-pulse"
+        />
       )}
 
       {status === 'anonymous' && (

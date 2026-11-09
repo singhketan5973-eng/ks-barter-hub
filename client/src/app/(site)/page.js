@@ -25,13 +25,18 @@ export default async function HomePage() {
         <p className="text-foreground-muted mt-4 max-w-prose text-lg">
           Trade things and skills with people near you. No money needed.
         </p>
-                <HeroActions />
+        <HeroActions />
       </section>
 
       <section aria-labelledby="newest-heading" className="max-w-page mx-auto w-full px-6 pb-8">
-        <h2 id="newest-heading" className="text-2xl font-semibold">
-          Newest listings
-        </h2>
+        <div className="flex items-end justify-between gap-4">
+          <h2 id="newest-heading" className="text-2xl font-semibold">
+            Newest listings
+          </h2>
+          <Link href="/browse" className="text-primary font-medium underline underline-offset-2">
+            Browse all
+          </Link>
+        </div>
 
         <div className="mt-6">
           {listings === null && (

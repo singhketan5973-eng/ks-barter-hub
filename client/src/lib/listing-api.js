@@ -13,3 +13,5 @@ export function buildQuery(params) {
 
 export const fetchListings = (params = {}, options = {}) =>
   api(`/listings${buildQuery(params)}`, options);
+
+export const fetchCategories = (options = {}) => api('/categories', options);
