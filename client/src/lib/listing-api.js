@@ -15,3 +15,7 @@ export const fetchListings = (params = {}, options = {}) =>
   api(`/listings${buildQuery(params)}`, options);
 
 export const fetchCategories = (options = {}) => api('/categories', options);
+
+export const fetchListing = (id, options = {}) => api(`/listings/${id}`, options);
+
+export const archiveListing = (id) => api(`/listings/${id}`, { method: 'DELETE' });
