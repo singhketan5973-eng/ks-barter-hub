@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/components/auth/AuthProvider';
 import { Alert } from '@/components/ui/Alert';
@@ -61,9 +62,17 @@ export function OwnerActions({ listingId, ownerId }) {
           </div>
         </div>
       ) : (
-        <Button variant="secondary" className="mt-3" onClick={() => setConfirming(true)}>
-          Archive listing
-        </Button>
+        <div className="mt-3 flex flex-wrap gap-3">
+          <Link
+            href={`/listings/${listingId}/edit`}
+            className="rounded-control border-line-strong bg-surface hover:bg-surface-sunken inline-flex min-h-11 items-center justify-center border px-4 font-medium"
+          >
+            Edit listing
+          </Link>
+          <Button variant="secondary" onClick={() => setConfirming(true)}>
+            Archive listing
+          </Button>
+        </div>
       )}
     </section>
   );

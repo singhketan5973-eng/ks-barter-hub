@@ -19,3 +19,7 @@ export const fetchCategories = (options = {}) => api('/categories', options);
 export const fetchListing = (id, options = {}) => api(`/listings/${id}`, options);
 
 export const archiveListing = (id) => api(`/listings/${id}`, { method: 'DELETE' });
+
+export const createListing = (data) => api('/listings', { method: 'POST', body: data });
+
+export const updateListing = (id, data) => api(`/listings/${id}`, { method: 'PATCH', body: data });

@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Select } from '@/components/ui/Select';
+import { flattenCategories } from '@/lib/categories';
 
 const KIND_OPTIONS = [
   ['', 'Things and services'],
@@ -14,13 +15,6 @@ const SORT_OPTIONS = [
   ['newest', 'Newest first'],
   ['oldest', 'Oldest first'],
 ];
-
-function flatten(categories, depth = 0) {
-  return categories.flatMap((category) => [
-    { ...category, depth },
-    ...flatten(category.children ?? [], depth + 1),
-  ]);
-}
 
 function Field({ label, htmlFor, className, children }) {
   return (
@@ -43,7 +37,7 @@ function CategoryOptions({ categories }) {
 }
 
 export function BrowseFilters({ values, categories }) {
-  const all = flatten(categories);
+  const all = flattenCategories(categories);
   const things = all.filter((category) => category.kind === 'item');
   const services = all.filter((category) => category.kind === 'service');
 

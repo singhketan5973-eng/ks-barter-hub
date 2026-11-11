@@ -17,7 +17,7 @@ export function Header() {
 
   return (
     <header className="border-line bg-surface border-b">
-      <div className="max-w-page mx-auto flex w-full items-center justify-between gap-4 px-6 py-3">
+      <div className="max-w-page mx-auto flex w-full flex-wrap items-center justify-between gap-4 px-6 py-3">
         <div className="flex items-center gap-6">
           <Link href="/" className="font-heading text-primary text-xl font-semibold">
             Barter Hub
@@ -54,6 +54,12 @@ export function Header() {
 
           {status === 'authenticated' && (
             <>
+              <Link
+                href="/listings/new"
+                className="rounded-control bg-primary text-on-solid hover:bg-primary-hover inline-flex min-h-11 items-center px-4 font-medium"
+              >
+                Post a listing
+              </Link>
               <Link
                 href="/account"
                 className="rounded-control hover:bg-surface-sunken inline-flex min-h-11 items-center px-3 font-medium"

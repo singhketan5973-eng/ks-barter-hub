@@ -32,9 +32,14 @@ export function HeroActions() {
       )}
 
       {status === 'authenticated' && (
-        <Link href="/browse" className={primaryClass}>
-          Browse listings
-        </Link>
+        <>
+          <Link href="/listings/new" className={primaryClass}>
+            Post a listing
+          </Link>
+          <Link href="/browse" className={secondaryClass}>
+            Browse listings
+          </Link>
+        </>
       )}
     </div>
   );

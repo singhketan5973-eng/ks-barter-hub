@@ -31,3 +31,42 @@ export const profileSchema = z.object({
   city: z.string().trim().max(80, 'City must be at most 80 characters'),
   bio: z.string().trim().max(500, 'Bio must be at most 500 characters'),
 });
+
+export const listingSchema = z
+  .object({
+    kind: z.enum(['item', 'service'], 'Choose what you are offering'),
+    category: z.string('Choose a category').min(1, 'Choose a category'),
+    title: z
+      .string('Enter a title')
+      .trim()
+      .min(3, 'Title must be at least 3 characters')
+      .max(120, 'Title must be at most 120 characters'),
+    description: z
+      .string('Enter a description')
+      .trim()
+      .min(10, 'Description must be at least 10 characters')
+      .max(3000, 'Description must be at most 3000 characters'),
+    wantedInReturn: z.string().trim().max(500, 'This must be at most 500 characters'),
+    city: z.string().trim().max(80, 'City must be at most 80 characters'),
+    condition: z.string().optional(),
+    serviceMode: z.string().optional(),
+    durationMinutes: z
+      .number('Time needed must be a number')
+      .int('Time needed must be a whole number of minutes')
+      .min(15, 'Time needed must be at least 15 minutes')
+      .max(1440, 'Time needed must be at most 24 hours')
+      .optional(),
+    availability: z.string().trim().max(300, 'Availability must be at most 300 characters'),
+  })
+  .superRefine((data, ctx) => {
+    if (data.kind === 'item' && !data.condition) {
+      ctx.addIssue({ code: 'custom', path: ['condition'], message: 'Choose a condition' });
+    }
+    if (data.kind === 'service' && !data.serviceMode) {
+      ctx.addIssue({
+        code: 'custom',
+        path: ['serviceMode'],
+        message: 'Choose how the service is provided',
+      });
+    }
+  });
