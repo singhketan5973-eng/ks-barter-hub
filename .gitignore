@@ -14,3 +14,9 @@ coverage
 # OS and editor files
 .DS_Store
 Thumbs.db
+
+# Python
+.venv/
+__pycache__/
+.ipynb_checkpoints/
+*.pyc
