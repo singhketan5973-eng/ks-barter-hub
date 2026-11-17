@@ -11,6 +11,9 @@ const envSchema = z.object({
   JWT_ACCESS_SECRET: z.string().min(32, 'JWT_ACCESS_SECRET must be at least 32 characters'),
   JWT_ACCESS_EXPIRES_IN: z.string().default('15m'),
   REFRESH_TOKEN_TTL_DAYS: z.coerce.number().int().min(1).max(90).default(7),
+
+  AI_SUGGESTIONS_ENABLED: z.stringbool().default(true),
+  AI_MODEL_DTYPE: z.enum(['fp32', 'q8']).default('fp32'),
 });
 
 const parsed = envSchema.safeParse(process.env);

@@ -24,3 +24,11 @@ export const createListingLimiter = rateLimit({
   legacyHeaders: false,
   message: { message: 'You are posting too quickly, please try again later' },
 });
+
+export const suggestLimiter = rateLimit({
+  windowMs: 60 * 1000,
+  limit: env.NODE_ENV === 'production' ? 20 : 200,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { message: 'Too many suggestions requested, please slow down' },
+});
