@@ -25,3 +25,6 @@ export const createListing = (data) => api('/listings', { method: 'POST', body: 
 export const updateListing = (id, data) => api(`/listings/${id}`, { method: 'PATCH', body: data });
 
 export const fetchMyListings = (params = {}) => api(`/listings/mine${buildQuery(params)}`);
+
+export const suggestCategories = (data) =>
+  api('/categories/suggest', { method: 'POST', body: data });

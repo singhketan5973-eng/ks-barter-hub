@@ -48,6 +48,9 @@ export const createListingSchemas = {
       serviceMode: serviceMode.optional(),
       durationMinutes: durationMinutes.optional(),
       availability: availability.optional(),
+
+      categorySource: z.enum(['user', 'ai']).optional(),
+      categoryConfidence: z.number().min(0).max(1).optional(),
     })
     .superRefine((data, ctx) => {
       if (data.kind === CATEGORY_KINDS.ITEM && !data.condition) {

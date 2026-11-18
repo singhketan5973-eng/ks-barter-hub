@@ -4,3 +4,4 @@ coverage
 dist
 *.md
 src/ai/data
+.ai-cache

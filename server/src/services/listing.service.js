@@ -89,6 +89,11 @@ export async function createListing(userId, input) {
     owner: owner._id,
     kind: input.kind,
     category: category._id,
+
+    categorySource: input.categorySource === 'ai' ? 'ai' : 'user',
+    ...(input.categorySource === 'ai' &&
+      input.categoryConfidence !== undefined && { categoryConfidence: input.categoryConfidence }),
+
     title: input.title,
     description: input.description,
     wantedInReturn: input.wantedInReturn,

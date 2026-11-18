@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { useForm, useWatch } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useAuth } from '@/components/auth/AuthProvider';
+import { CategorySuggestions } from '@/components/listings/CategorySuggestions';
 import { Alert } from '@/components/ui/Alert';
 import { Button } from '@/components/ui/Button';
 import { FormField } from '@/components/ui/FormField';
@@ -13,6 +14,7 @@ import { SelectField } from '@/components/ui/SelectField';
 import { flattenCategories } from '@/lib/categories';
 import { applyApiErrors } from '@/lib/form-errors';
 import { createListing, updateListing } from '@/lib/listing-api';
+import { useCategorySuggestions } from '@/lib/useCategorySuggestions';
 import { listingSchema } from '@/lib/validation';
 
 const FIELDS = [
@@ -110,6 +112,7 @@ export function ListingForm({ mode = 'create', categories, listing }) {
   const { user } = useAuth();
   const router = useRouter();
   const [formError, setFormError] = useState('');
+  const [picked, setPicked] = useState(null);
   const isEdit = mode === 'edit';
 
   const {
@@ -124,14 +127,35 @@ export function ListingForm({ mode = 'create', categories, listing }) {
     defaultValues: toFormValues(listing, user),
   });
 
-  const kind = useWatch({ control, name: 'kind' });
-  const categoryOptions = flattenCategories(categories).filter(
-    (category) => category.kind === kind
-  );
+  const [kind, title, description, category] = useWatch({
+    control,
+    name: ['kind', 'title', 'description', 'category'],
+  });
+  const categoryOptions = flattenCategories(categories).filter((item) => item.kind === kind);
+  const { suggestions, loading } = useCategorySuggestions({
+    kind,
+    title,
+    description,
+    enabled: !isEdit,
+  });
+
+  function pickSuggestion(suggestion) {
+    setValue('category', suggestion.id, { shouldValidate: true, shouldDirty: true });
+    setPicked({ id: suggestion.id, probability: suggestion.probability });
+  }
 
   async function onSubmit(values) {
     setFormError('');
-    const payload = buildPayload(values, isEdit);
+
+    const fromSuggestion = !isEdit && picked !== null && picked.id === values.category;
+    const payload = {
+      ...buildPayload(values, isEdit),
+      ...(!isEdit && {
+        categorySource: fromSuggestion ? 'ai' : 'user',
+        ...(fromSuggestion && { categoryConfidence: picked.probability }),
+      }),
+    };
+
     try {
       const { listing: saved } = isEdit
         ? await updateListing(listing.id, payload)
@@ -175,7 +199,12 @@ export function ListingForm({ mode = 'create', categories, listing }) {
                   type="radio"
                   value={value}
                   className="accent-primary mt-1 size-4"
-                  {...register('kind', { onChange: () => setValue('category', '') })}
+                  {...register('kind', {
+                    onChange: () => {
+                      setValue('category', '');
+                      setPicked(null);
+                    },
+                  })}
                 />
                 <span>
                   <span className="block font-medium">{label}</span>
@@ -191,21 +220,6 @@ export function ListingForm({ mode = 'create', categories, listing }) {
           )}
         </fieldset>
       )}
-
-      <SelectField
-        label="Category"
-        required
-        error={errors.category?.message}
-        {...register('category')}
-      >
-        <option value="">Choose a category</option>
-        {categoryOptions.map((category) => (
-          <option key={category.id} value={category.id}>
-            {'\u2014 '.repeat(category.depth)}
-            {category.name}
-          </option>
-        ))}
-      </SelectField>
 
       <FormField
         label="Title"
@@ -224,6 +238,32 @@ export function ListingForm({ mode = 'create', categories, listing }) {
         error={errors.description?.message}
         {...register('description')}
       />
+
+      <div className="space-y-3">
+        <SelectField
+          label="Category"
+          required
+          error={errors.category?.message}
+          {...register('category')}
+        >
+          <option value="">Choose a category</option>
+          {categoryOptions.map((item) => (
+            <option key={item.id} value={item.id}>
+              {'\u2014 '.repeat(item.depth)}
+              {item.name}
+            </option>
+          ))}
+        </SelectField>
+
+        {!isEdit && (
+          <CategorySuggestions
+            suggestions={suggestions}
+            loading={loading}
+            selectedId={category}
+            onPick={pickSuggestion}
+          />
+        )}
+      </div>
 
       <FormField
         label="What would you like in return?"
